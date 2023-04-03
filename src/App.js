@@ -1,5 +1,5 @@
 import './App.css';
-import SetupForm from './Form/SetupForm';
+import InputForm from './Input/InputForm';
 import Modal from './Modal/Modal';
 import LoadingScreen from './Loading/LoadingScreen';
 
