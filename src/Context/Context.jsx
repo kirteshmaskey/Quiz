@@ -1,9 +1,12 @@
 import { useState, createContext, useContext } from "react";
-import axios from "axios"
+import axios from "axios";
 
 
 const table = {
-  sports : 19,
+  scienceNature: 17,
+  computer: 18,
+  generalKnowledge: 9,
+  sports : 21,
   history: 23,
   politics: 24
 };
@@ -21,7 +24,7 @@ const AppProvider = ( { children } ) => {
   const [error, setError] = useState(false);
   const [quiz, setQuiz] = useState({
     amount: 10,
-    category: "sports",
+    category: "computer",
     difficulty: "easy"
   });
   
@@ -33,11 +36,11 @@ const AppProvider = ( { children } ) => {
     setLoading(true);
     setWaiting(false);
 
-    const response = await axios("url").catch((err) => {console.log("Error Fetching Questions from API." + err)});
+    const response = await axios(url).catch((err) => {console.log("Error Fetching Questions from API." + err)});
     
     if(response) {
       const data = response.data.results;
-      if(data.length) {
+      if(data.length > 0) {
         setQuestions(data);
         setLoading(false);
         setWaiting(false);
@@ -63,8 +66,8 @@ const AppProvider = ( { children } ) => {
 
   const nextQuestion = () => {
     setIndex((oldIndex) => {
-      const index = oldIndex.length+1;
-      if(index > oldIndex.length-1) {
+      const index = oldIndex + 1;
+      if(index > questions.length-1) {
         openModal();
         return 0;
       }else {
@@ -73,12 +76,12 @@ const AppProvider = ( { children } ) => {
     });
   };
 
-  const checkAnswer = (value) => {
+  const checkAnswers = (value) => {
     if(value) {
       setCorrect((oldState) => oldState+1);
     }
     nextQuestion();
-  }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -87,9 +90,16 @@ const AppProvider = ( { children } ) => {
     fetchQuestions(url);
   }
 
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setQuiz({...quiz, [name]: value});
+  }
 
   return(
-    <AppContext.Provider>
+    <AppContext.Provider value={{
+      waiting, loading, questions, index, correct, error, modal, nextQuestion, checkAnswers, closeModal, quiz, handleChange, handleSubmit
+    }}>
       { children }
     </AppContext.Provider>
   );
